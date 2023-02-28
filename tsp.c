@@ -119,11 +119,7 @@ int main(int argc, char*argv[]){
 
         }
         if(element -> length == n_cities){
-            if(distances[0][element ->current_city] == 0){
-                printf("NO SOLUTION");
-                return 1;
-            }
-            else if(element -> cost + distances[0][element ->current_city] < bestTourCost){
+            if(distances[0][element ->current_city] != 0 && element -> cost + distances[0][element ->current_city] < bestTourCost){
             
             bestTour = element -> tour;
             bestTourCost = element -> cost + distances[0][element ->current_city];
