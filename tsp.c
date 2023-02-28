@@ -106,6 +106,7 @@ int main(int argc, char*argv[]){
         if(element -> bound >= bestTourCost){
             if (bestTourCost >= max_value){
                 printf("NO SOLUTION");
+                return 1;
             }
             else{
             printf("%d\n", bestTourCost);
@@ -118,7 +119,11 @@ int main(int argc, char*argv[]){
 
         }
         if(element -> length == n_cities){
-            if(element -> cost + distances[0][element ->current_city] < bestTourCost){
+            if(distances[0][element ->current_city] == 0){
+                printf("NO SOLUTION");
+                return 1;
+            }
+            else if(element -> cost + distances[0][element ->current_city] < bestTourCost){
             
             bestTour = element -> tour;
             bestTourCost = element -> cost + distances[0][element ->current_city];
@@ -129,7 +134,7 @@ int main(int argc, char*argv[]){
         else{
             for (i = 1; i < n_cities; i++){
                 int inTour = 0;   
-                for (int j = 1; j < n_cities; j++) {
+                for (int j = 1; j < element -> length; j++) {
                     if (element -> tour[j] == i) {
                         inTour = 1;
                         break;
@@ -204,6 +209,7 @@ int main(int argc, char*argv[]){
 
     if (bestTourCost >= max_value){
         printf("NO SOLUTION");
+        return 1;
     }
     else{
     printf("%d\n", bestTourCost);
