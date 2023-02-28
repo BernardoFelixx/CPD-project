@@ -186,7 +186,7 @@ int main(int argc, char*argv[]){
                         newElement->current_city = i;
                         newElement->length = newLength;
                         newElement->cost = newCost;
-                        printElement(newElement);
+                        //printElement(newElement);
                         queue_push(queue, newElement);
                     }
                 }
