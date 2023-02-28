@@ -16,7 +16,7 @@ char compare(void* node1, void* node2) {
     Element* element2 = (Element*)node2;
     if (element1->bound < element2->bound)
         return 0;
-    else if (element1->bound == element2->bound && element1->current_city > element2->current_city)
+    else if (element1->bound == element2->bound && element1->current_city < element2->current_city)
         return 0;
     return 1;
 }
@@ -40,6 +40,13 @@ double getMinDistance (double distance, double value1, double value2) {
         return value2;
     return value1;
 }
+
+/*void printElement (Element* element) {
+    printf("Tour: ");
+    for(int j = 0; j < element->length; j++)
+        printf("%d ",element->tour[j]);
+    printf("\nCost: %f   Bound: %f    Length: %d    current_city: %d\n\n\n", element->cost, element->bound, element->length, element->current_city);
+}*/
 
 int main(int argc, char*argv[]){
 
@@ -68,18 +75,11 @@ int main(int argc, char*argv[]){
     while (fgets(str, 50, ptr) != NULL) {
         city_1=atoi(strtok(str," "));
         city_2=atoi(strtok(NULL," "));
-        distance_value=atoi(strtok(NULL," "));
+        distance_value=atof(strtok(NULL," "));
         distances[city_1][city_2]=distance_value;
         distances[city_2][city_1]=distance_value;
     }
     fclose(ptr);
-
-    /*for(i=0;i<n_cities;i++){
-        for(j=0;j<n_cities;j++){
-            printf("%d ",distances[i][j]);
-        }
-        printf("\n");
-    }*/
    
     double lowerbound;
     for(i=0;i<n_cities;i++){
@@ -98,7 +98,7 @@ int main(int argc, char*argv[]){
         }
         lowerbound = lowerbound + min1 + min2;
     }
-    lowerbound = lowerbound/2;
+    lowerbound = lowerbound/(double)2;
 
     Element* element1;
     element1 = malloc(sizeof(Element));
@@ -116,13 +116,14 @@ int main(int argc, char*argv[]){
     int* bestTour = (int*)malloc(n_cities * sizeof(int));
     while(queue->size != 0){
         Element* element = queue_pop(queue);
+        //printElement(element);
         if(element->bound >= bestTourCost){
             if (bestTourCost >= max_value){
-                printf("NO SOLUTION");
+                printf("NO SOLUTION\n");
                 return 1;
             }
             else{
-                printSolution(bestTour,bestTourLength, bestTourCost);
+                printSolution(bestTour, bestTourLength, bestTourCost);
                 return 0;
             }
         }
@@ -169,7 +170,7 @@ int main(int argc, char*argv[]){
                     //Second city
                     ct = getMinDistance(distance, min1t, min2t);
                     
-                    double newBound = element->bound + distance - (cf + ct)/2;
+                    double newBound = element->bound + distance - ((cf + ct)/(double)2);
                     int newLength = element->length + 1;
                     if(newBound <= bestTourCost){
                         int* newTour = (int*)malloc(newLength * sizeof(int));
@@ -185,6 +186,7 @@ int main(int argc, char*argv[]){
                         newElement->current_city = i;
                         newElement->length = newLength;
                         newElement->cost = newCost;
+                        printElement(newElement);
                         queue_push(queue, newElement);
                     }
                 }
@@ -193,7 +195,7 @@ int main(int argc, char*argv[]){
     }
 
     if (bestTourCost >= max_value){
-        printf("NO SOLUTION");
+        printf("NO SOLUTION\n");
         return 1;
     }
     else{
