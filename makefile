@@ -1,2 +1,2 @@
-blah:
-	gcc tsp.c -o tsp
+run:
+	gcc nqueue/queue.c tsp.c -o tsp
