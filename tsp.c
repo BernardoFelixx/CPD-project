@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <omp.h>
 #include "nqueue/queue.h"
 
 typedef struct{
@@ -48,40 +49,10 @@ double getMinDistance (double distance, double value1, double value2) {
     printf("\nCost: %f   Bound: %f    Length: %d    current_city: %d\n\n\n", element->cost, element->bound, element->length, element->current_city);
 }*/
 
-int main(int argc, char*argv[]){
-
-    int i, j, n_cities, n_roads, city_1, city_2; 
-    double distance_value;
-    double max_value=atof(argv[2]);
+int tsp(int n_cities, double **distances, double max_value){
     
-    FILE* ptr;
-    char str[50];
-    ptr = fopen(argv[1], "r");
- 
-    if (NULL == ptr) {
-        printf("file can't be opened \n");
-    }
- 
-    fgets(str, 50, ptr);
-    n_cities=atoi(strtok(str," "));
-    n_roads=atoi(strtok(NULL," "));
-
-    double** distances = (double**)malloc(n_cities * sizeof(double*));
-    for (i = 0; i < n_cities; i++)
-        distances[i] = (double*)malloc(n_cities * sizeof(double));
-
-    /*paralizable with a for loop i<n_cities*/
-    
-    while (fgets(str, 50, ptr) != NULL) {
-        city_1=atoi(strtok(str," "));
-        city_2=atoi(strtok(NULL," "));
-        distance_value=atof(strtok(NULL," "));
-        distances[city_1][city_2]=distance_value;
-        distances[city_2][city_1]=distance_value;
-    }
-    fclose(ptr);
-   
-    double lowerbound;
+    int i,j;
+    double lowerbound=0;
     for(i=0;i<n_cities;i++){
         double min1 = 0;
         double min2 = 0;
@@ -112,7 +83,7 @@ int main(int argc, char*argv[]){
     priority_queue_t* queue = queue_create(compare);
     queue_push(queue, element1);
     double bestTourCost = max_value;
-    int bestTourLength;
+    int bestTourLength=0;
     int* bestTour = (int*)malloc(n_cities * sizeof(int));
     while(queue->size != 0){
         Element* element = queue_pop(queue);
@@ -202,4 +173,53 @@ int main(int argc, char*argv[]){
         printSolution(bestTour,bestTourLength, bestTourCost);
         return 0;
     }
+
+}
+
+int main(int argc, char*argv[]){
+
+    int i, n_cities, city_1, city_2; 
+    //int n_roads; set but not used
+    double distance_value;
+    double max_value=atof(argv[2]);
+    
+    FILE* ptr;
+    char str[50];
+    ptr = fopen(argv[1], "r");
+ 
+    if (NULL == ptr) {
+        printf("file can't be opened \n");
+    }
+ 
+    
+    if(fgets(str, 50, ptr)==NULL){
+        printf("file read wen't wrong somewhere!\n");
+    }
+    n_cities=atoi(strtok(str," "));
+    //n_roads=atoi(strtok(NULL," ")); set but not used
+
+    double** distances = (double**)malloc(n_cities * sizeof(double*));
+    for (i = 0; i < n_cities; i++)
+        distances[i] = (double*)malloc(n_cities * sizeof(double));
+
+    /*paralizable with a for loop i<n_cities*/
+    
+    while (fgets(str, 50, ptr) != NULL) {
+        city_1=atoi(strtok(str," "));
+        city_2=atoi(strtok(NULL," "));
+        distance_value=atof(strtok(NULL," "));
+        distances[city_1][city_2]=distance_value;
+        distances[city_2][city_1]=distance_value;
+    }
+    fclose(ptr);
+
+    double exec_time;
+    exec_time = -omp_get_wtime();
+   
+    tsp(n_cities,distances,max_value);
+    
+    exec_time += omp_get_wtime();
+    fprintf(stderr, "%.1fs\n", exec_time);
+
+    return 0;
 }
