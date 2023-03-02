@@ -15,7 +15,7 @@ make
 
 ./tsp pub-instances/gen19-23.in 23
 
-./tsp pub-instances/gen20-1000.in 1000
+./tsp pub-instances/gen20-5000.in 5000
 
 ./tsp pub-instances/gen22-25000.in 25000
 
