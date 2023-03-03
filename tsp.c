@@ -150,9 +150,10 @@ int tsp(int n_cities, double **distances, double max_value){
                         int* newTour = (int*)malloc(newLength * sizeof(int));
                         int* newInTour = (int*)malloc(n_cities * sizeof(int));
                         memcpy (newInTour, element -> inTour, n_cities*sizeof(int));
-                        for (int j = 0; j < element->length; j++){
-                            newTour[j] = element->tour[j];
-                        }
+                        memcpy (newTour, element->tour, element->length*sizeof(int));
+                        // for (int j = 0; j < element->length; j++){
+                        //     newTour[j] = element->tour[j];
+                        // }
                         // for (int j = 0; j < n_cities; j++){
                         //     newInTour[j] = element->inTour[j];
                         // }
