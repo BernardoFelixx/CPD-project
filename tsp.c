@@ -6,6 +6,7 @@
 
 typedef struct{
     int* tour;
+    int* inTour;
     double cost;
     double bound;
     int length;
@@ -75,6 +76,8 @@ int tsp(int n_cities, double **distances, double max_value){
     element1 = malloc(sizeof(Element));
     element1->tour = (int*)malloc(1 * sizeof(int));
     element1->tour[0] = 0;
+    element1->inTour = (int*)malloc(n_cities * sizeof(int));
+    element1->inTour[0] = 1;
     element1->bound = lowerbound;
     element1->current_city = 0;
     element1->length = 1;
@@ -107,8 +110,8 @@ int tsp(int n_cities, double **distances, double max_value){
         }
         else{
             for (i = 1; i < n_cities; i++){
-                int inTour = isElementInTour(i, element->length, element->tour);  
-                if(distances[element->current_city][i] != 0 && inTour != 1){
+                // int inTour = isElementInTour(i, element->length, element->tour);  
+                if(distances[element->current_city][i] != 0 && element->inTour[i] != 1){
                     double cf, ct, min1f = 0, min2f = 0, min1t = 0, min2t = 0;
                     double distance = distances[element->current_city][i];
                     for(j = 0; j < n_cities; j++){
@@ -145,14 +148,22 @@ int tsp(int n_cities, double **distances, double max_value){
                     int newLength = element->length + 1;
                     if(newBound <= bestTourCost){
                         int* newTour = (int*)malloc(newLength * sizeof(int));
-                        for (int j = 0; j < element->length; j++)
+                        int* newInTour = (int*)malloc(n_cities * sizeof(int));
+                        memcpy (newInTour, element -> inTour, n_cities*sizeof(int));
+                        for (int j = 0; j < element->length; j++){
                             newTour[j] = element->tour[j];
+                        }
+                        // for (int j = 0; j < n_cities; j++){
+                        //     newInTour[j] = element->inTour[j];
+                        // }
                         newTour[element->length] = i;
+                        newInTour[i] = 1;
                         
                         double newCost = element->cost + distances[element->current_city][i];
                         Element* newElement;
                         newElement = malloc(sizeof(Element));
                         newElement->tour = newTour;
+                        newElement->inTour = newInTour;
                         newElement->bound = newBound;
                         newElement->current_city = i;
                         newElement->length = newLength;
